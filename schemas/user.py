@@ -18,7 +18,7 @@ class UserUpdateUsername(BaseModel):
         from_attributes = True
 
 # Response Type
-class UserRead(BaseModel):
+class UserPublic(BaseModel):
     id: UUID
     email: str
     username: str

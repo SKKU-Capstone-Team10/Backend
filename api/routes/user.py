@@ -9,7 +9,7 @@ from core.auth import CurrentUser, verify_password
 from schemas.user import (
     UserCreate,
     UserUpdateUsername,
-    UserRead
+    UserPublic
 )
 from schemas.message import Message
 
@@ -24,7 +24,7 @@ from crud.user import (
 router = APIRouter(prefix="/user", tags=['User'])
 
 # Create a user
-@router.post('/register', response_model=UserRead)
+@router.post('/register', response_model=UserPublic)
 def register_user(db: SessionDep, req: UserCreate):
     """
     Create new user.
@@ -41,7 +41,7 @@ def register_user(db: SessionDep, req: UserCreate):
 
     return user
 
-@router.get('/me', response_model=UserRead)
+@router.get('/me', response_model=UserPublic)
 def read_user_me(current_user: CurrentUser) -> Any:
     """
     Get current user using token
@@ -49,7 +49,7 @@ def read_user_me(current_user: CurrentUser) -> Any:
     return current_user
 
 # Read a user by id
-@router.get('/{id}', response_model=UserRead)
+@router.get('/{id}', response_model=UserPublic)
 def read_user_by_id(db: SessionDep, id: UUID, current_user: CurrentUser):
     user = get_user_by_id(db, id)
     if not user:

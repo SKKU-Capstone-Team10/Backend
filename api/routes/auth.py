@@ -8,7 +8,7 @@ from core.config import settings
 from core.auth import create_access_token, CurrentUser
 from core.db import SessionDep
 
-from schemas.user import UserRead
+from schemas.user import UserPublic
 from schemas.token import Token
 
 from crud.auth import authenticate
@@ -40,7 +40,7 @@ def login_access_token(
     )
     return token
 
-@router.post("/login/test-token", response_model=UserRead)
+@router.post("/login/test-token", response_model=UserPublic)
 def test_token(current_user: CurrentUser) -> Any:
     """
     Test access token
