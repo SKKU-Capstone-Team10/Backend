@@ -10,6 +10,13 @@ class UserCreate(BaseModel):
     class Config():
         from_attributes = True
 
+# Request Body for updating username
+class UserUpdateUsername(BaseModel):
+    username: str
+    password: str
+    class Config():
+        from_attributes = True
+
 # Response Type
 class UserRead(BaseModel):
     id: UUID
