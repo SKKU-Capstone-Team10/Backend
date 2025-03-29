@@ -9,6 +9,7 @@ from core.auth import CurrentUser, verify_password
 from schemas.user import (
     UserCreate,
     UserUpdateUsername,
+    UserUpdatePassword,
     UserPublic
 )
 from schemas.message import Message
@@ -61,7 +62,6 @@ def read_user_by_id(db: SessionDep, id: UUID, current_user: CurrentUser):
         )
     return user
 
-
 # Update username
 @router.patch('/{id}', response_model=Message)
 def update_username(
@@ -89,6 +89,16 @@ def update_username(
     db.refresh(user)
 
     return Message(message="Updated successfully.")
+
+# Update password
+@router.patch('/password/{id}', response_model=Message)
+def update_password(
+    db: SessionDep,
+    id: UUID,
+    current_user: CurrentUser,
+    req: UserUpdatePassword
+) -> Any:
+    pass
 
 # Delete user
 @router.delete('/{id}', response_model=Message)
