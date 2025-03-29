@@ -42,5 +42,5 @@ def post_chat(db: SessionDep, req: ChatCreate, current_user: CurrentUser) -> Any
         sender="host",
         content=ai_reply
     )
-    ai_chat_recored = create_chat(db, ai_chat)
-    return ai_chat_recored
+    ai_chat_recorded = create_chat(db, ai_chat)
+    return ai_chat_recorded
