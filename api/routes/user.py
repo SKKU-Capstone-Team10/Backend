@@ -4,9 +4,13 @@ from typing import Any
 from fastapi import APIRouter, HTTPException
 
 from core.db import SessionDep
-from core.auth import CurrentUser
+from core.auth import CurrentUser, verify_password
 
-from schemas.user import UserCreate, UserRead
+from schemas.user import (
+    UserCreate,
+    UserUpdateUsername,
+    UserRead
+)
 from schemas.message import Message
 
 from crud.user import (
@@ -52,15 +56,39 @@ def read_user_by_id(db: SessionDep, id: UUID, current_user: CurrentUser):
         raise HTTPException(status_code=404, detail="User not found")
     if user != current_user:
         raise HTTPException(
-            status_code=403, detail="Users can read only themselves. Use /api/user/me instead."
+            status_code=403,
+            detail="Users can read only themselves. Use /api/user/me instead."
         )
     return user
 
 
-# Update user
+# Update username
 @router.patch('/{id}', response_model=Message)
-def update_user(id: str):
-    return "tmp"
+def update_username(
+    db: SessionDep,
+    id: UUID,
+    current_user: CurrentUser,
+    req: UserUpdateUsername
+) -> Any:
+    # Check if Requested Password is valid.
+    if not verify_password(req.password, current_user.password):
+        raise HTTPException(status_code=400, detail="Incorrect password")
+    # Check if Requested UUID is Current User
+    if str(current_user.id) != str(id):
+        raise HTTPException(status_code=403, detail="Users can update only themselves.")
+    
+    # Read user
+    user = get_user_by_id(db, id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Patch the username
+    user.username = req.username
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+
+    return Message(message="Updated successfully.")
 
 # Delete user
 @router.delete('/{id}', response_model=Message)
