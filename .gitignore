@@ -1,0 +1,4 @@
+**/__pycache__/
+virtual_env/
+.env
+*.db
