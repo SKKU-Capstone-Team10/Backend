@@ -63,7 +63,7 @@ def read_user_by_id(db: SessionDep, id: UUID, current_user: CurrentUser):
     return user
 
 # Update username
-@router.patch('/{id}', response_model=Message)
+@router.patch('/username/{id}', response_model=Message)
 def update_username(
     db: SessionDep,
     id: UUID,
