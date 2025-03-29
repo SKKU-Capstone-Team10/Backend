@@ -17,6 +17,13 @@ class UserUpdateUsername(BaseModel):
     class Config():
         from_attributes = True
 
+# Request Body for updating password
+class UserUpdatePassword(BaseModel):
+    current_password: str
+    new_password: str
+    class Config():
+        from_attributes = True
+
 # Response Type
 class UserPublic(BaseModel):
     id: UUID
