@@ -43,4 +43,4 @@ def post_chat(db: SessionDep, req: ChatCreate, current_user: CurrentUser) -> Any
         content=ai_reply
     )
     ai_chat_recorded = create_chat(db, ai_chat)
-    return ai_chat_recorded
+    return ChatResponse.model_validate(ai_chat_recorded)
