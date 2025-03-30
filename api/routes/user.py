@@ -134,8 +134,7 @@ def delete_user_by_id(db: SessionDep, current_user: CurrentUser, req: UserDelete
     if not verify_password(req.password, user.password):
         raise HTTPException(status_code=401, detail="Incorrect password")
     
-    delete_user(db, user)
-    # Cascade delete chat session -> chat
+    delete_user(db, user) # Cascade delete chat session -> chat
 
     return Message(message="User deleted successfully")
 
