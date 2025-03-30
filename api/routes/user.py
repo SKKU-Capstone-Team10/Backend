@@ -30,12 +30,15 @@ def register_user(db: SessionDep, req: UserCreate):
     """
     Create new user.
     """
-    # user = get_user_by_email()
-    # if user:
-    #     raise HTTPException(
-    #         status_code=400,
-    #         detail="The user with this email already exists in the system.",
-    #     )
+    user = get_user_by_email(db, req.email)
+    if user:
+        raise HTTPException(
+            status_code=400,
+            detail="The user with this email already exists.",
+        )
+
+    # Password length check
+    # Password rule?
 
     user = create_user(db, req)
     # Send Email authentication number
