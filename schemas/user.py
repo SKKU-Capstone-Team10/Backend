@@ -10,8 +10,22 @@ class UserCreate(BaseModel):
     class Config():
         from_attributes = True
 
+# Request Body for updating username
+class UserUpdateUsername(BaseModel):
+    username: str
+    password: str
+    class Config():
+        from_attributes = True
+
+# Request Body for updating password
+class UserUpdatePassword(BaseModel):
+    current_password: str
+    new_password: str
+    class Config():
+        from_attributes = True
+
 # Response Type
-class UserRead(BaseModel):
+class UserPublic(BaseModel):
     id: UUID
     email: str
     username: str

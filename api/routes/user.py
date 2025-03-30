@@ -4,9 +4,14 @@ from typing import Any
 from fastapi import APIRouter, HTTPException
 
 from core.db import SessionDep
-from core.auth import CurrentUser
+from core.auth import CurrentUser, verify_password
 
-from schemas.user import UserCreate, UserRead
+from schemas.user import (
+    UserCreate,
+    UserUpdateUsername,
+    UserUpdatePassword,
+    UserPublic
+)
 from schemas.message import Message
 
 from crud.user import (
@@ -20,7 +25,7 @@ from crud.user import (
 router = APIRouter(prefix="/user", tags=['User'])
 
 # Create a user
-@router.post('/register', response_model=UserRead)
+@router.post('/register', response_model=UserPublic)
 def register_user(db: SessionDep, req: UserCreate):
     """
     Create new user.
@@ -37,7 +42,7 @@ def register_user(db: SessionDep, req: UserCreate):
 
     return user
 
-@router.get('/me', response_model=UserRead)
+@router.get('/me', response_model=UserPublic)
 def read_user_me(current_user: CurrentUser) -> Any:
     """
     Get current user using token
@@ -45,22 +50,55 @@ def read_user_me(current_user: CurrentUser) -> Any:
     return current_user
 
 # Read a user by id
-@router.get('/{id}', response_model=UserRead)
+@router.get('/{id}', response_model=UserPublic)
 def read_user_by_id(db: SessionDep, id: UUID, current_user: CurrentUser):
     user = get_user_by_id(db, id)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     if user != current_user:
         raise HTTPException(
-            status_code=403, detail="Users can read only themselves. Use /api/user/me instead."
+            status_code=403,
+            detail="Users can read only themselves. Use /api/user/me instead."
         )
     return user
 
+# Update username
+@router.patch('/username/{id}', response_model=Message)
+def update_username(
+    db: SessionDep,
+    id: UUID,
+    current_user: CurrentUser,
+    req: UserUpdateUsername
+) -> Any:
+    # Check if Requested Password is valid.
+    if not verify_password(req.password, current_user.password):
+        raise HTTPException(status_code=400, detail="Incorrect password")
+    # Check if Requested UUID is Current User
+    if str(current_user.id) != str(id):
+        raise HTTPException(status_code=403, detail="Users can update only themselves.")
+    
+    # Read user
+    user = get_user_by_id(db, id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Patch the username
+    user.username = req.username
+    db.add(user)
+    db.commit()
+    db.refresh(user)
 
-# Update user
-@router.patch('/{id}', response_model=Message)
-def update_user(id: str):
-    return "tmp"
+    return Message(message="Updated successfully.")
+
+# Update password
+@router.patch('/password/{id}', response_model=Message)
+def update_password(
+    db: SessionDep,
+    id: UUID,
+    current_user: CurrentUser,
+    req: UserUpdatePassword
+) -> Any:
+    pass
 
 # Delete user
 @router.delete('/{id}', response_model=Message)

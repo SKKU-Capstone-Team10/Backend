@@ -1,9 +1,13 @@
 import uuid
 from datetime import datetime, timezone
 from typing import Optional, List
+from enum import Enum
 
 from sqlmodel import SQLModel, Field, Relationship
 
+class Sender(str, Enum):
+    user = "user"
+    host = "host"
 
 class User(SQLModel, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
@@ -28,6 +32,7 @@ class ChatSession(SQLModel, table=True):
 class Chat(SQLModel, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     session_id: uuid.UUID = Field(foreign_key="chatsession.id")
+    sender: Sender
     content: str
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 

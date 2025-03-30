@@ -4,10 +4,10 @@ from sqlmodel import Session, select
 from core.auth import get_password_hash
 
 from models import User
-from schemas.user import UserCreate, UserRead
+from schemas.user import UserCreate, UserPublic
 
 
-def create_user(db: Session, req: UserCreate) -> UserRead:
+def create_user(db: Session, req: UserCreate) -> UserPublic:
     new_user = User(
         email = req.email,
         username = req.username,
