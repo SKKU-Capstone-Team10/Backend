@@ -11,8 +11,7 @@ from models import (
 )
 from schemas.chat_session import (
     ChatSessionList,
-    ChatSessionUpdateTitle,
-    ChatSessionDelete
+    ChatSessionUpdateTitle
 )
 from schemas.message import Message
 from crud.chat_session import (
