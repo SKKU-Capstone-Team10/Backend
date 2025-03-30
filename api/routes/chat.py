@@ -1,3 +1,4 @@
+from uuid import UUID
 from typing import Any
 from concurrent.futures import ThreadPoolExecutor
 
@@ -14,7 +15,10 @@ from schemas.chat import (
 )
 
 from crud.chat_session import create_session
-from crud.chat import create_chat
+from crud.chat import (
+    create_chat,
+    read_chats
+)
 
 router = APIRouter(prefix="/chat", tags=['Chat'])
 executor = ThreadPoolExecutor()
@@ -46,6 +50,11 @@ def post_chat(db: SessionDep, req: ChatCreate, current_user: CurrentUser) -> Any
     return ChatResponse.model_validate(ai_chat_recorded)
 
 # Fetch Chats belong to a Chat Session
-@router.get('/{id}', response_model=ChatHistoryResponse)
-def fetch_chats(id: str, current_user: CurrentUser) -> Any:
-    return "tmp"
+@router.get('/{session_id}', response_model=ChatHistoryResponse)
+def fetch_chats(db: SessionDep, session_id: UUID, current_user: CurrentUser) -> Any:
+    chat_list = read_chats(db, session_id)
+    res_data = ChatHistoryResponse(
+        session_id=session_id,
+        chats=chat_list
+    )
+    return res_data

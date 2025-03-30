@@ -1,7 +1,7 @@
 from uuid import UUID, uuid4
-from typing import Dict
+from typing import List
 
-from sqlmodel import Session
+from sqlmodel import Session, select
 
 from models import Chat
 from schemas.chat import ChatCreate
@@ -19,3 +19,8 @@ def create_chat(db: Session, req: ChatCreate) -> Chat:
     db.refresh(new_chat)
 
     return new_chat
+
+def read_chats(db: Session, session_id: UUID) -> List[Chat]:
+    statement = select(Chat).where(Chat.session_id == session_id)
+    chat_list = db.exec(statement)
+    return chat_list
