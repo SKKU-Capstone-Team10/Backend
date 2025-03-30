@@ -35,10 +35,10 @@ def fetch_chat_sessions(db: SessionDep, user_id: UUID, current_user: CurrentUser
 
 # Rename a Chat Session
 @router.patch('/update/title', response_model=Message)
-def update_chat_session_title(db: SessionDep, id: UUID, req: ChatSessionUpdateTitle) -> Any:
+def update_chat_session_title(db: SessionDep, req: ChatSessionUpdateTitle) -> Any:
     return "tmp"
 
 # Delete a Chat Session
-@router.delete('/{id}', response_model=Message)
-def delete_chat_session(db: SessionDep, id: UUID, current_user: CurrentUser) -> Any:
+@router.delete('/{session_id}', response_model=Message)
+def delete_chat_session(db: SessionDep, session_id: UUID, current_user: CurrentUser) -> Any:
     return Message(message="tmp")
