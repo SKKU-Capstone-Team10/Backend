@@ -12,8 +12,8 @@ class Sender(str, Enum):
 class User(SQLModel, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     email: str
-    password: str
     username: str
+    password: str
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
     # 관계 정의: 유저는 여러 채팅 세션을 가질 수 있음

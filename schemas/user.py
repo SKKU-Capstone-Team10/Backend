@@ -52,6 +52,11 @@ class UserUpdatePassword(BaseModel):
         if 'new_password1' in info.data and v != info.data['new_password1']:
             raise ValueError("New passwords are differents.")
         return v
+
+class UserDelete(BaseModel):
+    id: UUID
+    password: str
+
 # Response Type
 class UserPublic(BaseModel):
     id: UUID

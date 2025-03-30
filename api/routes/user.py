@@ -10,6 +10,7 @@ from schemas.user import (
     UserCreate,
     UserUpdateUsername,
     UserUpdatePassword,
+    UserDelete,
     UserPublic
 )
 from schemas.message import Message
@@ -78,7 +79,7 @@ def update_username(
         raise HTTPException(status_code=403, detail="Users can update only themselves.")
     # Check if Requested Password is valid.
     if not verify_password(req.password, current_user.password):
-        raise HTTPException(status_code=400, detail="Incorrect password")
+        raise HTTPException(status_code=401, detail="Incorrect password")
     
     # Read user
     user = get_user_by_id(db, req.id)
@@ -105,7 +106,7 @@ def update_password(
         raise HTTPException(status_code=403, detail="Users can update only themselves.")
     # Check if Requested Password is valid.
     if not verify_password(req.current_password, current_user.password):
-        raise HTTPException(status_code=400, detail="Incorrect password")
+        raise HTTPException(status_code=401, detail="Incorrect password")
     
     # Read user
     user = get_user_by_id(db, req.id)
@@ -120,9 +121,9 @@ def update_password(
     return Message(message="Updated successfully.")
 
 # Delete user
-@router.delete('/{id}', response_model=Message)
-def delete_user_by_id(db: SessionDep, id: UUID, current_user: CurrentUser):
-    user = get_user_by_id(db, id)
+@router.delete('/', response_model=Message)
+def delete_user_by_id(db: SessionDep, current_user: CurrentUser, req: UserDelete) -> Any:
+    user = get_user_by_id(db, req.id)
 
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
@@ -130,6 +131,8 @@ def delete_user_by_id(db: SessionDep, id: UUID, current_user: CurrentUser):
         raise HTTPException(
             status_code=403, detail="Users can delete only themselves."
         )
+    if not verify_password(req.password, user.password):
+        raise HTTPException(status_code=401, detail="Incorrect password")
     
     delete_user(db, user)
     # Cascade delete chat session -> chat
