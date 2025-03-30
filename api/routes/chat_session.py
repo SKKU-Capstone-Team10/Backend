@@ -29,7 +29,7 @@ def fetch_chat_sessions(db: SessionDep, user_id: UUID, current_user: CurrentUser
     session_list = read_sessions(db, user_id)
     res_data = ChatSessionList(
         user_id=user_id,
-        session_list=session_list
+        chat_sessions=session_list
     )
     return res_data
 
