@@ -11,12 +11,15 @@ from models import (
 )
 from schemas.chat_session import (
     ChatSessionList,
-    ChatSessionUpdateTitle
+    ChatSessionUpdateTitle,
+    ChatSessionDelete
 )
 from schemas.message import Message
 from crud.chat_session import (
     update_session_title,
-    read_sessions
+    get_session_by_id,
+    read_sessions,
+    delete_session
 )
 
 router = APIRouter(prefix='/chat-session', tags=['Chat Session'])
@@ -39,6 +42,17 @@ def update_chat_session_title(db: SessionDep, req: ChatSessionUpdateTitle) -> An
     return "tmp"
 
 # Delete a Chat Session
-@router.delete('/{session_id}', response_model=Message)
-def delete_chat_session(db: SessionDep, session_id: UUID, current_user: CurrentUser) -> Any:
-    return Message(message="tmp")
+@router.delete('/{id}', response_model=Message)
+def delete_chat_session(db: SessionDep, current_user: CurrentUser, id: UUID) -> Any:
+    session = get_session_by_id(db, id)
+
+    if not session:
+        raise HTTPException(status_code=404, detail="Chat Session not found")
+    if session.user_id != current_user.id:
+        raise HTTPException(
+            status_code=403, detail="Users can delete only their chat sessions."
+        )
+    
+    delete_session(db, session) # Cascade delete chat
+
+    return Message(message="Chat Session deleted successfully")
