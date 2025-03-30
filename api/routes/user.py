@@ -54,7 +54,7 @@ def read_user_me(current_user: CurrentUser) -> Any:
 
 # Read a user by id
 @router.get('/{id}', response_model=UserPublic)
-def read_user_by_id(db: SessionDep, id: UUID, current_user: CurrentUser):
+def read_user_by_id(db: SessionDep, id: UUID, current_user: CurrentUser) -> Any:
     user = get_user_by_id(db, id)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
@@ -66,10 +66,9 @@ def read_user_by_id(db: SessionDep, id: UUID, current_user: CurrentUser):
     return user
 
 # Update username
-@router.patch('/username/{id}', response_model=Message)
+@router.patch('/username', response_model=Message)
 def update_username(
     db: SessionDep,
-    id: UUID,
     current_user: CurrentUser,
     req: UserUpdateUsername
 ) -> Any:
@@ -77,11 +76,11 @@ def update_username(
     if not verify_password(req.password, current_user.password):
         raise HTTPException(status_code=400, detail="Incorrect password")
     # Check if Requested UUID is Current User
-    if str(current_user.id) != str(id):
+    if str(current_user.id) != str(req.id):
         raise HTTPException(status_code=403, detail="Users can update only themselves.")
     
     # Read user
-    user = get_user_by_id(db, id)
+    user = get_user_by_id(db, req.id)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     
@@ -94,10 +93,9 @@ def update_username(
     return Message(message="Updated successfully.")
 
 # Update password
-@router.patch('/password/{id}', response_model=Message)
+@router.patch('/password', response_model=Message)
 def update_password(
     db: SessionDep,
-    id: UUID,
     current_user: CurrentUser,
     req: UserUpdatePassword
 ) -> Any:

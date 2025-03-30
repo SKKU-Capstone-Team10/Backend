@@ -26,6 +26,7 @@ class UserCreate(BaseModel):
 
 # Request Body for updating username
 class UserUpdateUsername(BaseModel):
+    id: UUID
     username: str
     password: str
     class Config():
@@ -33,6 +34,7 @@ class UserUpdateUsername(BaseModel):
 
 # Request Body for updating password
 class UserUpdatePassword(BaseModel):
+    id: UUID
     current_password: str
     new_password: str
     class Config():
