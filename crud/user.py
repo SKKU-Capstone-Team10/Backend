@@ -11,7 +11,7 @@ def create_user(db: Session, req: UserCreate) -> UserPublic:
     new_user = User(
         email = req.email,
         username = req.username,
-        password = get_password_hash(req.password)
+        password = get_password_hash(req.password1)
     )
     db.add(new_user)
     db.commit()
