@@ -1,3 +1,4 @@
+from uuid import UUID
 from typing import Any
 
 from fastapi import APIRouter, HTTPException
@@ -24,7 +25,7 @@ router = APIRouter(prefix='/chat-session', tags=['Chat Session'])
 
 # Fetch Chat Sessions belong to a user
 @router.get('/{user_id}', response_model=ChatSessionList)
-def fetch_chat_sessions(db: SessionDep, user_id: str, current_user: CurrentUser) -> Any:
+def fetch_chat_sessions(db: SessionDep, user_id: UUID, current_user: CurrentUser) -> Any:
     session_list = read_sessions(db, user_id)
     res_data = ChatSessionList(
         user_id=user_id,
@@ -34,10 +35,10 @@ def fetch_chat_sessions(db: SessionDep, user_id: str, current_user: CurrentUser)
 
 # Rename a Chat Session
 @router.patch('/update/title', response_model=Message)
-def update_chat_session_title(id: str, req: ChatSessionUpdateTitle) -> Any:
+def update_chat_session_title(db: SessionDep, id: UUID, req: ChatSessionUpdateTitle) -> Any:
     return "tmp"
 
 # Delete a Chat Session
 @router.delete('/{id}', response_model=Message)
-def delete_chat_session(id: str, current_user: CurrentUser) -> Any:
-    return "tmp"
+def delete_chat_session(db: SessionDep, id: UUID, current_user: CurrentUser) -> Any:
+    return Message(message="tmp")
