@@ -44,3 +44,8 @@ def post_chat(db: SessionDep, req: ChatCreate, current_user: CurrentUser) -> Any
     )
     ai_chat_recorded = create_chat(db, ai_chat)
     return ChatResponse.model_validate(ai_chat_recorded)
+
+# Fetch Chats belong to a Chat Session
+@router.get('/{id}', response_model=ChatHistoryResponse)
+def fetch_chats(id: str, current_user: CurrentUser) -> Any:
+    return "tmp"

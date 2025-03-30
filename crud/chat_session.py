@@ -10,7 +10,7 @@ def create_session(db: Session, user_id: UUID) -> ChatSession:
 def read_sessions(db: Session, user_id: UUID) -> List[ChatSession]:
     pass
 
-def update_session_title(db: Session, session_id: UUID, new_title: str) -> None:
+def update_session_title(db: Session, id: UUID, new_title: str) -> None:
     pass
 
 def delete_session(db: Session, session_id: UUID) -> None:
