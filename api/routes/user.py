@@ -18,6 +18,7 @@ from crud.user import (
     create_user,
     get_user_by_email,
     get_user_by_id,
+    patch_password,
     delete_user
 )
 
@@ -72,12 +73,12 @@ def update_username(
     current_user: CurrentUser,
     req: UserUpdateUsername
 ) -> Any:
-    # Check if Requested Password is valid.
-    if not verify_password(req.password, current_user.password):
-        raise HTTPException(status_code=400, detail="Incorrect password")
     # Check if Requested UUID is Current User
     if str(current_user.id) != str(req.id):
         raise HTTPException(status_code=403, detail="Users can update only themselves.")
+    # Check if Requested Password is valid.
+    if not verify_password(req.password, current_user.password):
+        raise HTTPException(status_code=400, detail="Incorrect password")
     
     # Read user
     user = get_user_by_id(db, req.id)
@@ -99,7 +100,24 @@ def update_password(
     current_user: CurrentUser,
     req: UserUpdatePassword
 ) -> Any:
-    pass
+    # Check if Requested UUID is Current User
+    if str(current_user.id) != str(req.id):
+        raise HTTPException(status_code=403, detail="Users can update only themselves.")
+    # Check if Requested Password is valid.
+    if not verify_password(req.current_password, current_user.password):
+        raise HTTPException(status_code=400, detail="Incorrect password")
+    
+    # Read user
+    user = get_user_by_id(db, req.id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    # Patch the password
+    success = patch_password(db, user, req.new_password1)
+    if not success: # Failed to write in DB
+        raise HTTPException(status_code=500, detail="Password update failed. Check server log.")
+
+    return Message(message="Updated successfully.")
 
 # Delete user
 @router.delete('/{id}', response_model=Message)

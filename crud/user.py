@@ -27,6 +27,18 @@ def get_user_by_id(db: Session, id: UUID) -> User | None:
     user = db.get(User, id)
     return user
 
+def patch_password(db: Session, user: User, new_password: str) -> bool:
+    try:
+        user.password = get_password_hash(new_password)
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+        return True
+    except Exception as e:
+        db.rollback()
+        print(f"[patch_password] ERROR: {e}")
+        return False
+
 def delete_user(db: Session, user: User) -> None:
     db.delete(user)
     db.commit()

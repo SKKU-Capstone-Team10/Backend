@@ -36,10 +36,22 @@ class UserUpdateUsername(BaseModel):
 class UserUpdatePassword(BaseModel):
     id: UUID
     current_password: str
-    new_password: str
+    new_password1: str
+    new_password2: str
     class Config():
         from_attributes = True
 
+    @field_validator('current_password', 'new_password1', 'new_password2')
+    def not_empty(cls, v):
+        if not v or not v.strip():
+            raise ValueError("Empty field not allowed.")
+        return v
+
+    @field_validator('new_password2')
+    def passwords_match(cls, v, info: FieldValidationInfo):
+        if 'new_password1' in info.data and v != info.data['new_password1']:
+            raise ValueError("New passwords are differents.")
+        return v
 # Response Type
 class UserPublic(BaseModel):
     id: UUID
