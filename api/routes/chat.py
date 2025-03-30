@@ -28,7 +28,7 @@ def post_chat(db: SessionDep, req: ChatCreate, current_user: CurrentUser) -> Any
     future = executor.submit(lambda _: "AI Reply", req_data['content'])
 
     # Check if Session is exist
-    if req_data['session_id'] == None:
+    if 'session_id' not in req_data.keys():
         req_data['session_id'] = create_session(db, current_user.id)
     
     # Record user's chat

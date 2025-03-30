@@ -16,8 +16,10 @@ class ChatResponse(BaseModel):
     sender: Literal["user", "host"]
     content: str
     created_at: datetime
+    class Config():
+        from_attributes = True
 
 # Response Field for fetching a Chat Session History
-class ChatHistoryResponse:
+class ChatHistoryResponse(BaseModel):
     session_id: UUID
     chats: List[ChatResponse]

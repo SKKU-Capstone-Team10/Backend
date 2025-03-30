@@ -5,8 +5,15 @@ from sqlmodel import Session, select
 from models import ChatSession
 from schemas.chat_session import ChatSessionList
 
-def create_session(db: Session, user_id: UUID) -> ChatSession:
-    pass
+def create_session(db: Session, user_id: UUID) -> UUID:
+    new_session = ChatSession(
+        user_id=user_id,
+        title='dummy'
+    )
+    db.add(new_session)
+    db.commit()
+    db.refresh(new_session)
+    return new_session.id
 
 def read_sessions(db: Session, user_id: UUID) -> List[ChatSession]:
     statement = select(ChatSession).where(ChatSession.user_id == user_id)
