@@ -27,8 +27,17 @@ from crud.user import (
 router = APIRouter(prefix="/user", tags=['User'])
 
 # Create a user
-@router.post('/register', response_model=UserPublic)
+@router.post('/register', summary= "", response_model=UserPublic)
 def register_user(db: SessionDep, req: UserCreate):
+    """
+    Create new user \n
+    Response created user's UUID, email, username, timestamp \n
+    - **username**: User name. not unique.
+    - **email**: Must be email form and unique.
+    - **password1**: password
+    - **password2**: check password is same.
+    400 Error - user with the email exist
+    """
     user = get_user_by_email(db, req.email)
     if user:
         raise HTTPException(
@@ -43,20 +52,36 @@ def register_user(db: SessionDep, req: UserCreate):
     # Send Email authentication number
 
     return user
+
 # Get current login user using token
-@router.get('/me', response_model=UserPublic)
+@router.get('/me', response_model=UserPublic,
+            summary="Get Current Login User")
 def read_user_me(current_user: CurrentUser) -> Any:
+    """
+    Get current user info, login user. \n
+    403 Error - Invalid token. \n
+    404 Error - User with the token not found.
+    """
     return current_user
 
 # Read a user by id
 @router.get('/{id}', response_model=UserPublic)
-def read_user_by_id(db: SessionDep, id: UUID, current_user: CurrentUser) -> Any:
+def read_user_by_uuid(db: SessionDep, id: UUID, current_user: CurrentUser) -> Any:
+    """
+    Get user info with the user's uuid. \n
+    Required token to get response. \n
+    **id**: user's uuid
+    401 Error - User with the uuid and user with token did not match. \n
+    403 Error - Invalid token \n
+    404 Error - User with the token or uuid not found. \n
+    """
+    
     user = get_user_by_id(db, id)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     if user != current_user:
         raise HTTPException(
-            status_code=403,
+            status_code=401,
             detail="Users can read only themselves. Use /api/user/me instead."
         )
     return user
@@ -68,6 +93,15 @@ def update_username(
     current_user: CurrentUser,
     req: UserUpdateUsername
 ) -> Any:
+    """
+    Update Username, Token required. Response success message \n
+    **id**: User's UUID \n 
+    **username**: new username to update \n
+    **password**: confirm the password \n
+    401 Error - Incorrect password \n
+    403 Error - Invalid token or uuid did not match between request and token \n
+    404 Error - User with the token or uuid not found.
+    """
     # Check if Requested UUID is Current User
     if str(current_user.id) != str(req.id):
         raise HTTPException(status_code=403, detail="Users can update only themselves.")
@@ -100,6 +134,17 @@ def update_password(
     current_user: CurrentUser,
     req: UserUpdatePassword
 ) -> Any:
+    """
+    Update Password, Token required. Response success message \n
+    **id**: User's uuid \n
+    **current_password**: password for authentification \n
+    **new_password1**: password to update \n
+    **new_password2**: Check new passwords match
+    401 Error - Incorrect password \n
+    403 Error - Invalid token or uuid did not match between request and token \n
+    404 Error - User with the token or uuid not found. \n
+    500 Error - DB failure. Server's fault.
+    """
     # Check if Requested UUID is Current User
     if str(current_user.id) != str(req.id):
         raise HTTPException(status_code=403, detail="Users can update only themselves.")
@@ -122,6 +167,14 @@ def update_password(
 # Delete user
 @router.delete('/', response_model=Message)
 def delete_user_by_id(db: SessionDep, current_user: CurrentUser, req: UserDelete) -> Any:
+    """
+    Delete a user with the uuid, Token Required.
+    **id**: User's UUID
+    **password**: confirm password
+    401 Error - Incorrect password \n
+    403 Error - Invalid token or user entity did not match between request and token \n
+    404 Error - User with the token or uuid not found. \n
+    """
     user = get_user_by_id(db, req.id)
 
     if not user:
