@@ -29,9 +29,6 @@ router = APIRouter(prefix="/user", tags=['User'])
 # Create a user
 @router.post('/register', response_model=UserPublic)
 def register_user(db: SessionDep, req: UserCreate):
-    """
-    Create new user.
-    """
     user = get_user_by_email(db, req.email)
     if user:
         raise HTTPException(
