@@ -31,7 +31,7 @@ def fetch_chat_sessions(db: SessionDep, user_id: UUID, current_user: CurrentUser
     """
     Fetch Chat Sessions of a user with the UUID\n
     Token Required. \n
-    - **user_id**: User's UUID to fetch chat sessions
+    - **user_id**: User's UUID to fetch chat sessions \n
     403 Error - Invalid token. \n
     404 Error - User with the token not found.
     """
