@@ -46,12 +46,9 @@ def register_user(db: SessionDep, req: UserCreate):
     # Send Email authentication number
 
     return user
-
+# Get current login user using token
 @router.get('/me', response_model=UserPublic)
 def read_user_me(current_user: CurrentUser) -> Any:
-    """
-    Get current user using token
-    """
     return current_user
 
 # Read a user by id
