@@ -24,7 +24,8 @@ router = APIRouter(prefix="/chat", tags=['Chat'])
 executor = ThreadPoolExecutor()
 
 # Initial chat -> Create a new Chat Session
-@router.post('/', response_model=ChatResponse)
+@router.post('/', response_model=ChatResponse,
+             summary="Send Chat & Get AI response. Optional[Create New Chat Session]")
 def post_chat(db: SessionDep, req: ChatCreate, current_user: CurrentUser) -> Any:
     """
     Add new chat from user and get AI's response message. \n
