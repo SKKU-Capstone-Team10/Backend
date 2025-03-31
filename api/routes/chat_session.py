@@ -61,6 +61,7 @@ def delete_chat_session(db: SessionDep, current_user: CurrentUser, id: UUID) -> 
     - **id**: uuid of chat session to delete \n
     403 Error - Invalid token. Or owner of the session and token do not match \n
     404 Error - User with the token not found. Or Chat Session with the UUID not found.
+    500 Error = DB failure, Server's fault
     """
     session = get_session_by_id(db, id)
 
@@ -71,6 +72,8 @@ def delete_chat_session(db: SessionDep, current_user: CurrentUser, id: UUID) -> 
             status_code=403, detail="Users can delete only their chat sessions."
         )
     
-    delete_session(db, session) # Cascade delete chat
+    success = delete_session(db, session) # Cascade delete chat
+    if not success:
+        raise HTTPException(status_code=500, detail="Delete failed")
 
     return Message(message="Chat Session deleted successfully")

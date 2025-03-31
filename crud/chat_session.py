@@ -2,6 +2,8 @@ from uuid import UUID
 from typing import List
 from sqlmodel import Session, select
 
+from fastapi import HTTPException
+
 from models import ChatSession
 from schemas.chat_session import ChatSessionList
 
@@ -28,7 +30,12 @@ def read_sessions(db: Session, user_id: UUID) -> List[ChatSession]:
 def update_session_title(db: Session, id: UUID, new_title: str) -> None:
     pass
 
-def delete_session(db: Session, session: ChatSession) -> None:
-    db.delete(session)
-    db.commit()
-    return None
+def delete_session(db: Session, session: ChatSession) -> bool:
+    try:
+        db.delete(session)
+        db.commit()
+        return True
+    except Exception as e:
+        db.rollback()
+        print(f"[delete_session] ERROR: {e}")
+        return False
