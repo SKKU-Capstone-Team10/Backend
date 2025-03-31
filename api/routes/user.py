@@ -70,7 +70,7 @@ def read_user_by_uuid(db: SessionDep, id: UUID, current_user: CurrentUser) -> An
     """
     Get user info with the user's uuid. \n
     Required token to get response. \n
-    **id**: user's uuid
+    - **id**: user's uuid
     401 Error - User with the uuid and user with token did not match. \n
     403 Error - Invalid token \n
     404 Error - User with the token or uuid not found. \n
@@ -95,9 +95,9 @@ def update_username(
 ) -> Any:
     """
     Update Username, Token required. Response success message \n
-    **id**: User's UUID \n 
-    **username**: new username to update \n
-    **password**: confirm the password \n
+    - **id**: User's UUID \n 
+    - **username**: new username to update \n
+    - **password**: confirm the password \n
     401 Error - Incorrect password \n
     403 Error - Invalid token or uuid did not match between request and token \n
     404 Error - User with the token or uuid not found.
@@ -136,10 +136,10 @@ def update_password(
 ) -> Any:
     """
     Update Password, Token required. Response success message \n
-    **id**: User's uuid \n
-    **current_password**: password for authentification \n
-    **new_password1**: password to update \n
-    **new_password2**: Check new passwords match
+    - **id**: User's uuid \n
+    - **current_password**: password for authentification \n
+    - **new_password1**: password to update \n
+    - **new_password2**: Check new passwords match
     401 Error - Incorrect password \n
     403 Error - Invalid token or uuid did not match between request and token \n
     404 Error - User with the token or uuid not found. \n
@@ -169,8 +169,8 @@ def update_password(
 def delete_user_by_id(db: SessionDep, current_user: CurrentUser, req: UserDelete) -> Any:
     """
     Delete a user with the uuid, Token Required.
-    **id**: User's UUID
-    **password**: confirm password
+    - **id**: User's UUID
+    - **password**: confirm password
     401 Error - Incorrect password \n
     403 Error - Invalid token or user entity did not match between request and token \n
     404 Error - User with the token or uuid not found. \n
