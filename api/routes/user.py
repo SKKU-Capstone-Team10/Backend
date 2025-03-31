@@ -168,7 +168,9 @@ def update_password(
 @router.delete('/', response_model=Message)
 def delete_user_by_id(db: SessionDep, current_user: CurrentUser, req: UserDelete) -> Any:
     """
-    Delete a user with the uuid, Token Required.
+    Delete a user with the uuid. \n
+    Token Required. \n
+    Cascade delete Chat Sessions and Chats belong to it.
     - **id**: User's UUID
     - **password**: confirm password \n
     401 Error - Incorrect password \n
