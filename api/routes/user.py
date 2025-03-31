@@ -35,7 +35,7 @@ def register_user(db: SessionDep, req: UserCreate):
     - **username**: User name. not unique.
     - **email**: Must be email form and unique.
     - **password1**: password
-    - **password2**: check password is same.
+    - **password2**: check password is same. \n
     400 Error - user with the email exist
     """
     user = get_user_by_email(db, req.email)
@@ -139,7 +139,7 @@ def update_password(
     - **id**: User's uuid \n
     - **current_password**: password for authentification \n
     - **new_password1**: password to update \n
-    - **new_password2**: Check new passwords match
+    - **new_password2**: Check new passwords match \n
     401 Error - Incorrect password \n
     403 Error - Invalid token or uuid did not match between request and token \n
     404 Error - User with the token or uuid not found. \n
@@ -170,7 +170,7 @@ def delete_user_by_id(db: SessionDep, current_user: CurrentUser, req: UserDelete
     """
     Delete a user with the uuid, Token Required.
     - **id**: User's UUID
-    - **password**: confirm password
+    - **password**: confirm password \n
     401 Error - Incorrect password \n
     403 Error - Invalid token or user entity did not match between request and token \n
     404 Error - User with the token or uuid not found. \n
