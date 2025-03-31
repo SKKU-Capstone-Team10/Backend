@@ -88,9 +88,14 @@ def update_username(
     
     # Patch the username
     user.username = req.username
-    db.add(user)
-    db.commit()
-    db.refresh(user)
+    try:
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+    except Exception as e:
+        db.rollback()
+        print(f"[update_username] ERROR: {e}")
+        raise HTTPException(status_code=500, detail="Update Failed.")
 
     return Message(message="Updated successfully.")
 
