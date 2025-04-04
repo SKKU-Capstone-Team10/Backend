@@ -16,7 +16,9 @@ from schemas.chat_session import (
 from schemas.message import Message
 from crud.chat_session import (
     update_session_title,
-    read_sessions
+    get_session_by_id,
+    read_sessions,
+    delete_session
 )
 
 router = APIRouter(prefix='/chat-session', tags=['Chat Session'])
@@ -26,19 +28,52 @@ router = APIRouter(prefix='/chat-session', tags=['Chat Session'])
 # Fetch Chat Sessions belong to a user
 @router.get('/{user_id}', response_model=ChatSessionList)
 def fetch_chat_sessions(db: SessionDep, user_id: UUID, current_user: CurrentUser) -> Any:
+    """
+    Fetch Chat Sessions of a user with the UUID\n
+    Token Required. \n
+    - **user_id**: User's UUID to fetch chat sessions \n
+    403 Error - Invalid token. \n
+    404 Error - User with the token not found.
+    """
     session_list = read_sessions(db, user_id)
     res_data = ChatSessionList(
         user_id=user_id,
-        session_list=session_list
+        chat_sessions=session_list
     )
     return res_data
 
 # Rename a Chat Session
 @router.patch('/update/title', response_model=Message)
 def update_chat_session_title(db: SessionDep, req: ChatSessionUpdateTitle) -> Any:
-    return "tmp"
+    """
+    Update the tile of chat session\n
+    **NOT Implemented yet**
+    """
+    return Message(message="Not implemented")
 
 # Delete a Chat Session
-@router.delete('/{session_id}', response_model=Message)
-def delete_chat_session(db: SessionDep, session_id: UUID, current_user: CurrentUser) -> Any:
-    return Message(message="tmp")
+@router.delete('/{id}', response_model=Message)
+def delete_chat_session(db: SessionDep, current_user: CurrentUser, id: UUID) -> Any:
+    """
+    Delete a chat session. \n
+    Token Required. \n
+    Cascade delete chats belong to it.
+    - **id**: uuid of chat session to delete \n
+    403 Error - Invalid token. Or owner of the session and token do not match \n
+    404 Error - User with the token not found. Or Chat Session with the UUID not found.
+    500 Error = DB failure, Server's fault
+    """
+    session = get_session_by_id(db, id)
+
+    if not session:
+        raise HTTPException(status_code=404, detail="Chat Session not found")
+    if session.user_id != current_user.id:
+        raise HTTPException(
+            status_code=403, detail="Users can delete only their chat sessions."
+        )
+    
+    success = delete_session(db, session) # Cascade delete chat
+    if not success:
+        raise HTTPException(status_code=500, detail="Delete failed")
+
+    return Message(message="Chat Session deleted successfully")

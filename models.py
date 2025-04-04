@@ -12,12 +12,15 @@ class Sender(str, Enum):
 class User(SQLModel, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     email: str
-    password: str
     username: str
+    password: str
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
     # 관계 정의: 유저는 여러 채팅 세션을 가질 수 있음
-    chat_sessions: List["ChatSession"] = Relationship(back_populates="user")
+    chat_sessions: List["ChatSession"] = Relationship(
+        back_populates="user",
+        sa_relationship_kwargs={"cascade": "all, delete-orphan"}
+    )
 
 class ChatSession(SQLModel, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
@@ -27,7 +30,10 @@ class ChatSession(SQLModel, table=True):
 
     # 관계 정의
     user: "User" = Relationship(back_populates="chat_sessions")
-    chats: List["Chat"] = Relationship(back_populates="session")
+    chats: List["Chat"] = Relationship(
+        back_populates="session",
+        sa_relationship_kwargs={"cascade": "all, delete-orphan"}
+    )
 
 class Chat(SQLModel, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
