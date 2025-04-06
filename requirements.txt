@@ -8,7 +8,7 @@ PyJWT==2.10.1
 passlib==1.7.4
 python-multipart==0.0.20 # form data, fastapi.security.oauth2.OAuth2PasswordRequestForm Dependency
 sqlmodel==0.0.24
-
+requests
 
 sqlalchemy==2.0.39
 greenlet==3.1.1
