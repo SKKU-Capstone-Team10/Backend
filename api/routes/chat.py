@@ -38,7 +38,7 @@ def get_ai_reply(content: str) -> str:
         result = response.json()
         return result.get("reply", "No reply from RAG server")
     except requests.RequestException as e:
-        raise HTTPException(status_code=500, detail="No reply from RAG server")
+        raise HTTPException(status_code=500, detail="Exception while requesting RAG server")
 
 # Initial chat -> Create a new Chat Session
 @router.post('/', response_model=ChatResponse,
