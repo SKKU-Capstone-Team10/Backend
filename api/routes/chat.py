@@ -1,11 +1,13 @@
 from uuid import UUID
 from typing import Any
 from concurrent.futures import ThreadPoolExecutor
+import requests
 
 from fastapi import APIRouter, HTTPException
 
 from core.db import SessionDep
 from core.auth import CurrentUser
+from core.config import settings
 
 from models import Chat
 from schemas.chat import (
@@ -23,9 +25,24 @@ from crud.chat import (
 router = APIRouter(prefix="/chat", tags=['Chat'])
 executor = ThreadPoolExecutor()
 
+# Pass the user query to RAG server
+# Get reply from the RAG server
+def get_ai_reply(content: str) -> str:
+    try:
+        response = requests.post(
+            f"{settings.RAG_HOST}{settings.RAG_ROUTE}",
+            json={"query": content},
+            timeout=10
+        )
+        response.raise_for_status()
+        result = response.json()
+        return result.get("reply", "No reply from RAG server")
+    except requests.RequestException as e:
+        raise HTTPException(status_code=500, detail="Exception while requesting RAG server")
+
 # Initial chat -> Create a new Chat Session
 @router.post('/', response_model=ChatResponse,
-             summary="Send Chat & Get AI response. Optional[Create New Chat Session]")
+            summary="Send Chat & Get AI response. Optional[Create New Chat Session]")
 def post_chat(db: SessionDep, req: ChatCreate, current_user: CurrentUser) -> Any:
     """
     Add new chat from user and get AI's response message. \n
@@ -39,7 +56,7 @@ def post_chat(db: SessionDep, req: ChatCreate, current_user: CurrentUser) -> Any
     req_data = req.model_dump(exclude_unset=True) # Pydantic.BaseModel -> python.dict
     
     # Request a reply to ai server
-    future = executor.submit(lambda _: "AI Reply", req_data['content'])
+    future = executor.submit(get_ai_reply, req_data['content'])
 
     # Check if Session is exist
     if 'session_id' not in req_data.keys():
