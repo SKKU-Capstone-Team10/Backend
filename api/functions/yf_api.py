@@ -1,3 +1,7 @@
+from typing import List, Dict, Union, Any
+from pandas import DataFrame
+import requests
+from bs4 import BeautifulSoup
 import yfinance as yf
 
 def get_price(ticker: str) -> float:
@@ -13,3 +17,42 @@ def get_name(ticker: str) -> str:
     name = tkr.info.get('longName')
     
     return name
+
+def get_history(ticker: str, period: str, interval: str) -> DataFrame:
+    tkr = yf.Ticker(ticker)
+    history = tkr.history(period=period, interval=interval)
+    if not history:
+        return {}
+    
+    return history.reset_index().to_dict(orient="list")
+
+def get_dividends(ticker: str) -> Dict[str, List[str]]:
+    tkr = yf.Ticker(ticker)
+    dividends = tkr.dividends
+    if not dividends:
+        return {}
+    return dividends.reset_index().to_dict(orient="list")
+
+def get_splits(ticker: str) -> Dict[str, List[str]]:
+    tkr = yf.Ticker(ticker)
+    splits = tkr.splits
+    if not splits:
+        return {}
+    return splits.reset_index().to_dict(orient="list")
+
+def get_earning_calendar(ticker: str):
+    tkr = yf.Ticker(ticker)
+    calendar = tkr.calendar
+    if not calendar:
+        return {}
+    return calendar.reset_index().to_dict(orient="list")
+
+def get_related_etfs(ticker: str) -> List:
+    pass
+
+def get_news(ticker: str) -> List[Dict[str, Any]]:
+    tkr = yf.Ticker(ticker)
+    news = []
+    if hasattr(tkr, 'news'):
+        news = tkr.news
+    return news
