@@ -49,6 +49,25 @@ def add_favorite_stock(db: SessionDep, ticker: str, current_user: CurrentUser):
 
     return stock
 
+@router.delete("/{ticker}/favorite")
+def delete_favorite_stock(db: SessionDep, ticker: str, current_user: CurrentUser):
+    # Check if it in favorite stock DB
+    fav_stock = read_fav_stock(db, current_user.id, ticker)
+    if not fav_stock:
+        raise HTTPException(
+            status_code=404,
+            detail=f"'{ticker}' is not in favorite stock list"
+        )
+    
+    success = delete_fav_stock(db, fav_stock)
+    if success == False:
+        raise HTTPException(
+            status_code=500,
+            detail=f"'Unfavorite {ticker}' Failed"
+        )
+    
+    return f"Unfavorite '{ticker}' Success"
+
 @router.get("/fetch/favorites", response_model=List[StockResponse])
 def fetch_favorite_stocks(db: SessionDep, current_user: CurrentUser):
     fav_stock_tickers = fetch_fav_stocks(db, current_user.id)

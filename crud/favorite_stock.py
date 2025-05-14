@@ -29,5 +29,12 @@ def fetch_fav_stocks(db: Session, user_id: UUID):
     fav_stocks = db.exec(statement)
     return fav_stocks
 
-def delete_fav_stock():
-    pass
+def delete_fav_stock(db: Session, fav_stock: FavoriteStock) -> bool:
+    try:
+        db.delete(fav_stock)
+        db.commit()
+        return True
+    except Exception as e:
+        db.rollback()
+        print(f"[delete_session] ERROR: {e}")
+        return False
