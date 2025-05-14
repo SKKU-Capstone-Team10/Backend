@@ -6,6 +6,6 @@ from pydantic import BaseModel
 class StockResponse(BaseModel):
     ticker: str
     name: Optional[str]
-    current_price: Optional[float]
+    price: Optional[float]
     class Config():
         from_attributes = True

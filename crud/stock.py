@@ -10,7 +10,7 @@ def create_stock(db: Session, ticker: str, name: str, price: float) -> None:
     new_stock = Stock(
         ticker=ticker,
         name=name,
-        current_price=price
+        price=price
     )
 
     db.add(new_stock)
@@ -25,7 +25,7 @@ def read_stock(db: Session, ticker: str) -> Stock | None:
     return stock
 
 def update_stock_price(db: Session, stock: Stock, price: float) -> Stock:
-    stock.current_price = price
+    stock.price = price
     db.add(stock)
     db.commit()
     db.refresh(stock)

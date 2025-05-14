@@ -53,7 +53,7 @@ class Stock(SQLModel, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     ticker: str
     name: Optional[str] = Field(default=None)
-    current_price: Optional[float] = Field(default=None)
+    price: Optional[float] = Field(default=None)
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     # 관계: 여러 유저가 이 주식을 관심 등록할 수 있음
