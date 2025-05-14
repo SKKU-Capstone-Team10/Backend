@@ -9,7 +9,7 @@ from models import Stock, FavoriteStock
 from schemas.stock import StockResponse
 
 from crud.stock import create_stock, read_stock, update_stock_price
-
+from crud.favorite_stock import create_fav_stock, read_fav_stock, fetch_fav_stock, delete_fav_stock
 import yfinance as yf
 
 router = APIRouter(prefix='/stock', tags=['Stock'])
@@ -28,5 +28,35 @@ def get_stock(db: SessionDep, ticker: str):
     else: # If not, insert into DB
         name = tkr.info.get('longName')
         stock = create_stock(db, ticker, name, price)
+    
+    return stock
+
+@router.post("/{ticker}/favorite", response_model=StockResponse)
+def add_favorite_stock(db: SessionDep, ticker: str, current_user: CurrentUser):
+    # Check if the stock exist in DB
+    stock = read_stock(db, ticker)
+    tkr = yf.Ticker(ticker)
+    price = tkr.info.get("regularMarketPrice")
+    if stock:
+        stock = update_stock_price(db, stock, price)
+    else:
+        name = tkr.info.get("longName")
+        stock = create_stock(db, ticker, name, price)
+
+    # Check if it already in favorite stock DB
+    fav_stock = read_fav_stock(db, current_user.id, stock.id)
+    if fav_stock:
+        raise HTTPException(
+            status_code=400,
+            detail=f"'{ticker}' is already in favorite stock list"
+        )
+
+    # Add to Favorite Stock DB
+    fav = create_fav_stock(db, current_user.id, stock.id)
+    if not fav:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Favorite '{ticker}' Failed"
+        )
     
     return stock
