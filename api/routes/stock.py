@@ -1,4 +1,4 @@
-from typing import Dict, Any
+from typing import List, Dict, Any
 
 from fastapi import APIRouter, HTTPException
 
@@ -9,7 +9,7 @@ from models import Stock, FavoriteStock
 from schemas.stock import StockResponse
 
 from crud.stock import create_stock, read_stock, update_stock_price
-from crud.favorite_stock import create_fav_stock, read_fav_stock, fetch_fav_stock, delete_fav_stock
+from crud.favorite_stock import create_fav_stock, read_fav_stock, fetch_fav_stocks, delete_fav_stock
 import yfinance as yf
 
 router = APIRouter(prefix='/stock', tags=['Stock'])
@@ -44,7 +44,7 @@ def add_favorite_stock(db: SessionDep, ticker: str, current_user: CurrentUser):
         stock = create_stock(db, ticker, name, price)
 
     # Check if it already in favorite stock DB
-    fav_stock = read_fav_stock(db, current_user.id, stock.id)
+    fav_stock = read_fav_stock(db, current_user.id, stock.ticker)
     if fav_stock:
         raise HTTPException(
             status_code=400,
@@ -52,11 +52,22 @@ def add_favorite_stock(db: SessionDep, ticker: str, current_user: CurrentUser):
         )
 
     # Add to Favorite Stock DB
-    fav = create_fav_stock(db, current_user.id, stock.id)
+    fav = create_fav_stock(db, current_user.id, stock.ticker)
     if not fav:
         raise HTTPException(
             status_code=500,
             detail=f"Favorite '{ticker}' Failed"
         )
-    
+
     return stock
+
+@router.get("/fetch/favorites", response_model=List[StockResponse])
+def fetch_favorite_stocks(db: SessionDep, current_user: CurrentUser):
+    fav_stock_tickers = fetch_fav_stocks(db, current_user.id)
+    fav_stocks = []
+
+    for ticker in fav_stock_tickers:
+        stock = read_stock(db, ticker)
+        fav_stocks.append(stock)
+    
+    return fav_stocks

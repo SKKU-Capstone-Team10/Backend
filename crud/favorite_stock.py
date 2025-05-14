@@ -6,26 +6,28 @@ from sqlmodel import Session, select
 from models import FavoriteStock
 from schemas.stock import *
 
-def create_fav_stock(db: Session, user_id: UUID, stock_id: UUID) -> FavoriteStock:
+def create_fav_stock(db: Session, user_id: UUID, ticker: str) -> FavoriteStock:
     new_fav = FavoriteStock(
         user_id=user_id,
-        stock_id=stock_id
+        ticker=ticker
     )
     db.add(new_fav)
     db.commit()
     db.refresh(new_fav)
     return new_fav
 
-def read_fav_stock(db: Session, user_id: UUID, stock_id: UUID) -> FavoriteStock:
+def read_fav_stock(db: Session, user_id: UUID, ticker: str) -> FavoriteStock:
     statement = select(FavoriteStock).where(
             FavoriteStock.user_id == user_id,
-            FavoriteStock.stock_id == stock_id
+            FavoriteStock.ticker == ticker
         )
     fav_stock = db.exec(statement).first()
     return fav_stock
 
-def fetch_fav_stock():
-    pass
+def fetch_fav_stocks(db: Session, user_id: UUID):
+    statement = select(FavoriteStock.ticker).where(FavoriteStock.user_id == user_id)
+    fav_stocks = db.exec(statement)
+    return fav_stocks
 
 def delete_fav_stock():
     pass
