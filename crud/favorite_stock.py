@@ -9,7 +9,7 @@ from schemas.stock import *
 def create_fav_stock(db: Session, user_id: UUID, ticker: str) -> FavoriteStock:
     new_fav = FavoriteStock(
         user_id=user_id,
-        ticker=ticker
+        ticker=ticker.upper()
     )
     db.add(new_fav)
     db.commit()
@@ -19,7 +19,7 @@ def create_fav_stock(db: Session, user_id: UUID, ticker: str) -> FavoriteStock:
 def read_fav_stock(db: Session, user_id: UUID, ticker: str) -> FavoriteStock:
     statement = select(FavoriteStock).where(
             FavoriteStock.user_id == user_id,
-            FavoriteStock.ticker == ticker
+            FavoriteStock.ticker == ticker.upper()
         )
     fav_stock = db.exec(statement).first()
     return fav_stock

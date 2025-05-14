@@ -9,6 +9,7 @@ from schemas.stock import *
 from api.functions.yf_api import get_price, get_name
 
 def create_stock(db: Session, ticker: str) -> None:
+    ticker = ticker.upper()
     new_stock = Stock(
         ticker=ticker,
         name=get_name(ticker),
@@ -22,6 +23,7 @@ def create_stock(db: Session, ticker: str) -> None:
     return new_stock
 
 def read_stock(db: Session, ticker: str) -> Stock | None:
+    ticker = ticker.upper()
     statement = select(Stock).where(Stock.ticker == ticker)
     stock = db.exec(statement).first()
     
