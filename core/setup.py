@@ -17,7 +17,7 @@ def setup_stock_records(db: SessionDep) -> None:
             continue # Pass already exist stock
         
         tkr = yf.Ticker(ticker)
-        price = tkr.fast_info.get('last_price')
+        price = tkr.info.get('regularMarketPrice')
         name = tkr.info.get('longName')
         data = {'ticker': ticker, 'name': name, 'current_price': price}
         db.add(Stock(**data))
