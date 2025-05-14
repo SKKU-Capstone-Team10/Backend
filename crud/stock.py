@@ -6,11 +6,13 @@ from sqlmodel import Session, select
 from models import Stock, FavoriteStock
 from schemas.stock import *
 
-def create_stock(db: Session, ticker: str, name: str, price: float) -> None:
+from api.functions.yf_api import get_price, get_name
+
+def create_stock(db: Session, ticker: str) -> None:
     new_stock = Stock(
         ticker=ticker,
-        name=name,
-        price=price
+        name=get_name(ticker),
+        price=get_price(ticker)
     )
 
     db.add(new_stock)
@@ -22,10 +24,17 @@ def create_stock(db: Session, ticker: str, name: str, price: float) -> None:
 def read_stock(db: Session, ticker: str) -> Stock | None:
     statement = select(Stock).where(Stock.ticker == ticker)
     stock = db.exec(statement).first()
+    
+    if stock:
+        stock.price = get_price(ticker)
+        db.add(stock)
+        db.commit()
+        db.refresh(stock)
+
     return stock
 
-def update_stock_price(db: Session, stock: Stock, price: float) -> Stock:
-    stock.price = price
+def update_stock_price(db: Session, stock: Stock) -> Stock:
+    stock.price = get_price(stock.ticker)
     db.add(stock)
     db.commit()
     db.refresh(stock)

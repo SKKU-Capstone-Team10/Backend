@@ -65,7 +65,7 @@ class Stock(SQLModel, table=True):
 class FavoriteStock(SQLModel, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     user_id: uuid.UUID = Field(foreign_key="user.id", index=True)
-    stock_id: uuid.UUID = Field(foreign_key="stock.id", index=True)
+    ticker: str = Field(foreign_key="stock.ticker", index=True)
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     # 관계 정의
