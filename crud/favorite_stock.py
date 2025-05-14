@@ -36,5 +36,5 @@ def delete_fav_stock(db: Session, fav_stock: FavoriteStock) -> bool:
         return True
     except Exception as e:
         db.rollback()
-        print(f"[delete_session] ERROR: {e}")
+        print(f"[delete_favorite_stock] ERROR: {e}")
         return False
