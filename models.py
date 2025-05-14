@@ -21,6 +21,10 @@ class User(SQLModel, table=True):
         back_populates="user",
         sa_relationship_kwargs={"cascade": "all, delete-orphan"}
     )
+    favorite_stocks: List["FavoriteStock"] = Relationship(
+        back_populates="user",
+        sa_relationship_kwargs={"cascade": "all, delete-orphan"}
+    )
 
 class ChatSession(SQLModel, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
@@ -51,3 +55,19 @@ class Stock(SQLModel, table=True):
     name: Optional[str] = Field(default=None)
     current_price: Optional[float] = Field(default=None)
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+    # 관계: 여러 유저가 이 주식을 관심 등록할 수 있음
+    favorites: List["FavoriteStock"] = Relationship(
+        back_populates="stock",
+        sa_relationship_kwargs={"cascade": "all, delete-orphan"}
+    )
+
+class FavoriteStock(SQLModel, table=True):
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    user_id: uuid.UUID = Field(foreign_key="user.id", index=True)
+    stock_id: uuid.UUID = Field(foreign_key="stock.id", index=True)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+    # 관계 정의
+    user: "User" = Relationship(back_populates="favorite_stocks")
+    stock: "Stock" = Relationship(back_populates="favorites")
