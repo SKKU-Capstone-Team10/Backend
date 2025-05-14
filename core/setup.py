@@ -19,6 +19,6 @@ def setup_stock_records(db: SessionDep) -> None:
         tkr = yf.Ticker(ticker)
         price = tkr.info.get('regularMarketPrice')
         name = tkr.info.get('longName')
-        data = {'ticker': ticker, 'name': name, 'current_price': price}
+        data = {'ticker': ticker, 'name': name, 'price': price}
         db.add(Stock(**data))
     db.commit()
