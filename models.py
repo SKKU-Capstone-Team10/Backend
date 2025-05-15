@@ -49,9 +49,16 @@ class Chat(SQLModel, table=True):
     # 관계 정의
     session: Optional["ChatSession"] = Relationship(back_populates="chats")
 
+class ETFStockLink(SQLModel, table=True):
+    etf_ticker: str   = Field(foreign_key="etf.ticker",   primary_key=True, index=True)
+    stock_ticker: str = Field(foreign_key="stock.ticker", primary_key=True, index=True)
+
+    etf: "ETF"   = Relationship(back_populates="etf_stock_links")
+    stock: "Stock" = Relationship(back_populates="stock_etf_links")
+
 class Stock(SQLModel, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
-    ticker: str
+    ticker: str = Field(index=True, unique=True)
     name: Optional[str] = Field(default=None)
     price: Optional[float] = Field(default=None)
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
@@ -60,6 +67,14 @@ class Stock(SQLModel, table=True):
     favorites: List["FavoriteStock"] = Relationship(
         back_populates="stock",
         sa_relationship_kwargs={"cascade": "all, delete-orphan"}
+    )
+    # 2-1) 링크 모델 리스트
+    stock_etf_links: List[ETFStockLink] = Relationship(back_populates="stock")
+
+    # 2-2) M:N 직접 속성
+    related_etfs: List["ETF"] = Relationship(
+        back_populates="related_stocks",
+        link_model=ETFStockLink
     )
 
 class FavoriteStock(SQLModel, table=True):
@@ -71,3 +86,19 @@ class FavoriteStock(SQLModel, table=True):
     # 관계 정의
     user: "User" = Relationship(back_populates="favorite_stocks")
     stock: "Stock" = Relationship(back_populates="favorites")
+
+class ETF(SQLModel, table=True):
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    ticker: str = Field(index=True, unique=True)
+    name: Optional[str] = Field(default=None)
+    price: Optional[float] = Field(default=None)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+    # 4-1) 링크 모델 리스트
+    etf_stock_links: List[ETFStockLink] = Relationship(back_populates="etf")
+
+    # 4-2) M:N 직접 속성
+    related_stocks: List[Stock] = Relationship(
+        back_populates="related_etfs",
+        link_model=ETFStockLink
+    )
