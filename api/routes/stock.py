@@ -8,9 +8,8 @@ from core.auth import CurrentUser
 from models import Stock, FavoriteStock
 from schemas.stock import StockResponse
 
-from crud.stock import create_stock, read_stock, update_stock_price
+from crud.stock import create_stock, read_stock, read_detailed_stock_information, update_stock_price
 from crud.favorite_stock import create_fav_stock, read_fav_stock, fetch_fav_stocks, delete_fav_stock
-import yfinance as yf
 
 router = APIRouter(prefix='/stock', tags=['Stock'])
 
@@ -23,6 +22,16 @@ def get_stock(db: SessionDep, ticker: str):
         stock = create_stock(db, ticker)
     
     return stock
+
+@router.get("/{ticker}/detailed", response_model=Dict[str, Any])
+def get_stock_detailed(db: SessionDep, ticker: str, period: str, interval: str):
+    # Check if the stock exist in DB
+    stock = read_stock(db, ticker)
+    if not stock: # If not, insert into DB
+        stock = create_stock(db, ticker)
+    
+    result = read_detailed_stock_information(db, ticker, period, interval)
+    return result
 
 @router.post("/{ticker}/favorite", response_model=StockResponse)
 def add_favorite_stock(db: SessionDep, ticker: str, current_user: CurrentUser):

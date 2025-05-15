@@ -18,10 +18,10 @@ def get_name(ticker: str) -> str:
     
     return name
 
-def get_history(ticker: str, period: str, interval: str) -> DataFrame:
+def get_history(ticker: str, period: str, interval: str) -> Dict[str, List[str]]:
     tkr = yf.Ticker(ticker)
     history = tkr.history(period=period, interval=interval)
-    if not history:
+    if history.empty:
         return {}
     
     return history.reset_index().to_dict(orient="list")
@@ -29,14 +29,14 @@ def get_history(ticker: str, period: str, interval: str) -> DataFrame:
 def get_dividends(ticker: str) -> Dict[str, List[str]]:
     tkr = yf.Ticker(ticker)
     dividends = tkr.dividends
-    if not dividends:
+    if dividends.empty:
         return {}
     return dividends.reset_index().to_dict(orient="list")
 
 def get_splits(ticker: str) -> Dict[str, List[str]]:
     tkr = yf.Ticker(ticker)
     splits = tkr.splits
-    if not splits:
+    if splits.empty:
         return {}
     return splits.reset_index().to_dict(orient="list")
 
@@ -45,10 +45,7 @@ def get_earning_calendar(ticker: str):
     calendar = tkr.calendar
     if not calendar:
         return {}
-    return calendar.reset_index().to_dict(orient="list")
-
-def get_related_etfs(ticker: str) -> List:
-    pass
+    return calendar
 
 def get_news(ticker: str) -> List[Dict[str, Any]]:
     tkr = yf.Ticker(ticker)
