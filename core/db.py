@@ -4,7 +4,7 @@ from fastapi import Depends
 from core.config import settings
 from models import *
 
-DATABASE_URL = settings.DATABASE_URI
+DATABASE_URL = "sqlite:///./local_database.db"
 engine = create_engine(DATABASE_URL, echo=True)
 
 def create_db_and_tables():
