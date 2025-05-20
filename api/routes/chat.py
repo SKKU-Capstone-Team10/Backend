@@ -33,7 +33,8 @@ def post_chat(db: SessionDep, req: ChatCreate, current_user: CurrentUser) -> Any
     """
     Add new chat from user and get AI's response message. \n
     Token Required \n
-    - **session_id** Optional: Chat Session to add the chats both from user and AI. Remain **None** to create new chat session.
+    - **session_id** Optional: Chat Session to add the chats both from user and AI.\n
+    \tDo not pass the key to create new chat session. With missing key, reponse will contain 'title' key.\n
     - **sender**: Enum type[user/host], Request it with 'user', Response filled with 'host'
     - **content**: chat content from user \n
     403 Error - Invalid token. \n
