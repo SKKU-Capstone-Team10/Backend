@@ -7,10 +7,10 @@ from fastapi import HTTPException
 from models import ChatSession
 from schemas.chat_session import ChatSessionList
 
-def create_session(db: Session, user_id: UUID) -> UUID:
+def create_session(db: Session, user_id: UUID, title: str) -> UUID:
     new_session = ChatSession(
         user_id=user_id,
-        title='dummy'
+        title=title
     )
     db.add(new_session)
     db.commit()
