@@ -44,6 +44,7 @@ class Chat(SQLModel, table=True):
     session_id: uuid.UUID = Field(foreign_key="chatsession.id")
     sender: Sender
     content: str
+    ticker: Optional[str]
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     # 관계 정의
