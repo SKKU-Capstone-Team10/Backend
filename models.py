@@ -75,7 +75,8 @@ class Stock(SQLModel, table=True):
     # 2-2) M:N 직접 속성
     related_etfs: List["ETF"] = Relationship(
         back_populates="related_stocks",
-        link_model=ETFStockLink
+        link_model=ETFStockLink,
+        sa_relationship_kwargs={"overlaps": "stock_etf_links,stock,etf"}
     )
 
 class FavoriteStock(SQLModel, table=True):
@@ -96,10 +97,14 @@ class ETF(SQLModel, table=True):
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     # 4-1) 링크 모델 리스트
-    etf_stock_links: List[ETFStockLink] = Relationship(back_populates="etf")
+    etf_stock_links: List[ETFStockLink] = Relationship(
+        back_populates="etf",
+        sa_relationship_kwargs={"overlaps": "related_stocks,related_etfs"}
+    )
 
     # 4-2) M:N 직접 속성
     related_stocks: List[Stock] = Relationship(
         back_populates="related_etfs",
-        link_model=ETFStockLink
+        link_model=ETFStockLink,
+        sa_relationship_kwargs={"overlaps": "etf,stock_etf_links,stock"}
     )
