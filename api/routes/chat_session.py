@@ -47,7 +47,8 @@ def fetch_chat_sessions(db: SessionDep, user_id: UUID, current_user: CurrentUser
 def update_chat_session_title(db: SessionDep, req: ChatSessionUpdateTitle) -> Any:
     """
     Update the tile of chat session\n
-    **NOT Implemented yet**
+    - **id**: uuid of chat session to update the title \n
+    - **new_title**: new title to update \n
     """
     session = get_session_by_id(db, req.id)
     if not session:
