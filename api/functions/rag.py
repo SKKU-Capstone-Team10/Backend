@@ -20,10 +20,10 @@ def get_ai_reply(content: str, is_first_chat: bool) -> str:
         result = response.json()
         title = result.get("title", None)
         reply = result.get("reply", "No reply from RAG server")
-        ticker = result.get("ticker", "No ticker pased from RAG server")
+        ticker = result.get("ticker", "No ticker parsed from RAG server")
         res = {
             "title": title,
-            "reply": reply,
+            "content": reply,
             "ticker": ticker
         }
         return res

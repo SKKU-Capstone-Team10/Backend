@@ -41,26 +41,34 @@ def post_chat(db: SessionDep, req: ChatCreate, current_user: CurrentUser) -> Any
     """
     req_data = req.model_dump(exclude_unset=True) # Pydantic.BaseModel -> python.dict
     
-    # Request a reply to ai server
-    future = executor.submit(get_ai_reply, req_data['content'])
+    # Check if Session is exist -> not exist means first chat
+    is_first_chat = 'session_id' not in req_data.keys()
 
-    # Check if Session is exist
-    if 'session_id' not in req_data.keys():
-        req_data['session_id'] = create_session(db, current_user.id)
+    # Request a reply to ai server
+    res_rag = get_ai_reply(req_data['content'], is_first_chat)
+    res_content = res_rag['content']
+    res_ticker = res_rag['ticker']
+
+    # If first chat, create a Chat Session
+    if is_first_chat == True:
+        res_title = res_rag['title']
+        req_data['session_id'] = create_session(db, current_user.id, res_title)
     
     # Record user's chat
     _ = create_chat(db, ChatCreate(**req_data))
 
-    # Wait for ai server's response
-    ai_reply = future.result()
     # Response the message from AI server
     ai_chat = ChatCreate(
         session_id=req_data['session_id'],
         sender="host",
-        content=ai_reply
+        content=res_content,
+        ticker=res_ticker
     )
-    ai_chat_recorded = create_chat(db, ai_chat)
-    return ChatResponse.model_validate(ai_chat_recorded)
+    res = create_chat(db, ai_chat).model_dump()
+    if is_first_chat == True:
+        res['title'] = res_title
+
+    return ChatResponse(**res)
 
 # Fetch Chats belong to a Chat Session
 @router.get('/{session_id}', response_model=ChatHistoryResponse)

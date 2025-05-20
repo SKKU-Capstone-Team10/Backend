@@ -8,13 +8,14 @@ class ChatCreate(BaseModel):
     session_id: Optional[UUID] = None # None indicates to create new chat session
     sender: Literal["user", "host"]
     content: str
+    ticker: Optional[str] = None
 
 # Response Field
 class ChatResponse(BaseModel):
     id: UUID
     session_id: UUID
     sender: Literal["user", "host"]
-    title: str
+    title: Optional[str]
     content: str
     ticker: str
     created_at: datetime
