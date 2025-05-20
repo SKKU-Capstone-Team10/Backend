@@ -15,7 +15,7 @@ from schemas.chat_session import (
 )
 from schemas.message import Message
 from crud.chat_session import (
-    update_session_title,
+    patch_session_title,
     get_session_by_id,
     read_sessions,
     delete_session
@@ -49,7 +49,15 @@ def update_chat_session_title(db: SessionDep, req: ChatSessionUpdateTitle) -> An
     Update the tile of chat session\n
     **NOT Implemented yet**
     """
-    return Message(message="Not implemented")
+    session = get_session_by_id(db, req.id)
+    if not session:
+        raise HTTPException(status_code=404, detail="Chat Session not found")
+
+    success = patch_session_title(db, session, req.new_title)
+    if not success: # Failed to write in DB
+        raise HTTPException(status_code=500, detail="Title update failed. Check server log.")
+    
+    return Message(message="Updated successfully.")
 
 # Delete a Chat Session
 @router.delete('/{id}', response_model=Message)

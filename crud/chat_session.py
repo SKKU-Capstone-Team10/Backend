@@ -18,8 +18,7 @@ def create_session(db: Session, user_id: UUID, title: str) -> UUID:
     return new_session.id
 
 def get_session_by_id(db: Session, id: UUID) -> ChatSession:
-    statement = select(ChatSession).where(ChatSession.id == id)
-    session = db.exec(statement)
+    session = db.get(ChatSession, id)
     return session
 
 def read_sessions(db: Session, user_id: UUID) -> List[ChatSession]:
@@ -27,8 +26,17 @@ def read_sessions(db: Session, user_id: UUID) -> List[ChatSession]:
     session_list = db.exec(statement)
     return session_list
 
-def update_session_title(db: Session, id: UUID, new_title: str) -> None:
-    pass
+def patch_session_title(db: Session, session: ChatSession, new_title: str) -> None:
+    try:
+        session.title = new_title
+        db.add(session)
+        db.commit()
+        db.refresh(session)
+        return True
+    except Exception as e:
+        db.rollback()
+        print(f"[patch_session_title] ERROR: {e}")
+        return False
 
 def delete_session(db: Session, session: ChatSession) -> bool:
     try:
