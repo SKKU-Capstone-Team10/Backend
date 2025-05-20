@@ -3,6 +3,7 @@ from core.db import SessionDep
 from models import Stock, ETF, ETFStockLink
 
 import yfinance as yf
+from tqdm import tqdm
 
 def setup_stock_records(db: SessionDep) -> None:
     tickers = [
@@ -11,7 +12,8 @@ def setup_stock_records(db: SessionDep) -> None:
         'JNJ', 'BAC', 'ABBV', 'BABA', 'PLTR', 'KO', 'UNH', 'CRM', 'HOOD', 'TMUS'
     ]
 
-    for ticker in tickers:
+    loop = tqdm(tickers, desc="📈 Stocks setup")
+    for ticker in loop:
         exists = db.exec(select(Stock).where(Stock.ticker == ticker))
         if exists.first():
             continue # Pass already exist stock
@@ -30,7 +32,8 @@ def setup_etf_records(db: SessionDep) -> None:
         'ARKK', 'GLD', 'SPXD', 'RWM', 'SLV', 'XBI', 'TMF', 'UVXY', 'SRLN', 'SCHG'
     ]
 
-    for ticker in tickers:
+    loop = tqdm(tickers, desc="📊 ETFs setup")
+    for ticker in loop:
         exists = db.exec(select(ETF).where(ETF.ticker == ticker))
         if exists.first():
             continue # Pass already exist stock
