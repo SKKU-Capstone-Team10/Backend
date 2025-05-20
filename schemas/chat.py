@@ -14,7 +14,9 @@ class ChatResponse(BaseModel):
     id: UUID
     session_id: UUID
     sender: Literal["user", "host"]
+    title: str
     content: str
+    ticker: str
     created_at: datetime
     class Config():
         from_attributes = True
