@@ -4,7 +4,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 from fastapi import APIRouter, HTTPException
 
-from core.db import SessionDep
+from core.db import SessionDep, UuidDep
 from core.auth import CurrentUser
 from core.config import settings
 
@@ -73,7 +73,7 @@ def post_chat(db: SessionDep, req: ChatCreate, current_user: CurrentUser) -> Any
 
 # Fetch Chats belong to a Chat Session
 @router.get('/{session_id}', response_model=ChatHistoryResponse)
-def fetch_chats(db: SessionDep, session_id: UUID, current_user: CurrentUser) -> Any:
+def fetch_chats(db: SessionDep, session_id: UuidDep, current_user: CurrentUser) -> Any:
     """
     Fetch chats of a session by uuid of the chat session. \n
     Token Required. \n

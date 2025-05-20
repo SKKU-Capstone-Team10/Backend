@@ -4,7 +4,7 @@ from typing import Any
 from fastapi import APIRouter, HTTPException
 
 from core.auth import CurrentUser
-from core.db import SessionDep
+from core.db import SessionDep, UuidDep
 
 from models import (
     ChatSession
@@ -61,7 +61,7 @@ def update_chat_session_title(db: SessionDep, req: ChatSessionUpdateTitle) -> An
 
 # Delete a Chat Session
 @router.delete('/{id}', response_model=Message)
-def delete_chat_session(db: SessionDep, current_user: CurrentUser, id: UUID) -> Any:
+def delete_chat_session(db: SessionDep, current_user: CurrentUser, id: UuidDep) -> Any:
     """
     Delete a chat session. \n
     Token Required. \n
