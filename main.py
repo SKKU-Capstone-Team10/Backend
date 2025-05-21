@@ -27,10 +27,18 @@ app.include_router(api_router, prefix='/api')
 # >>>>> Local Database Config
 from sqlmodel import Session
 from core.db import create_db_and_tables, engine
-from core.setup import setup_stock_records, setup_etf_records
+from core.setup import (
+    setup_stock_records,
+    setup_etf_records,
+    setup_stock_records_parallel,
+    setup_etf_records_parallel
+)
+
 def on_startup():
     create_db_and_tables()
     with Session(engine) as db:
-        setup_stock_records(db)
-        setup_etf_records(db)
+        # setup_stock_records(db)
+        # setup_etf_records(db)
+        setup_stock_records_parallel()
+        setup_etf_records_parallel()
 # <<<<< Local Database Config
