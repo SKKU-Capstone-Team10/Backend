@@ -10,4 +10,4 @@ class ChatSessionList(BaseModel):
 
 class ChatSessionUpdateTitle(BaseModel):
     id: UUID
-    title: str
+    new_title: str

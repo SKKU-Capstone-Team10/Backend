@@ -11,7 +11,10 @@ sqlmodel==0.0.24
 requests==2.32.3
 yfinance==0.2.60
 lxml==5.4.0
-
+tqdm==4.67.1
 
 sqlalchemy==2.0.39
 greenlet==3.1.1
+
+numpy==1.26.4
+pandas==2.2.3

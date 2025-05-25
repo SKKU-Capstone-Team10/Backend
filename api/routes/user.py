@@ -3,7 +3,7 @@ from typing import Any
 
 from fastapi import APIRouter, HTTPException
 
-from core.db import SessionDep
+from core.db import SessionDep, UuidDep
 from core.auth import CurrentUser, verify_password
 
 from schemas.user import (
@@ -66,7 +66,7 @@ def read_user_me(current_user: CurrentUser) -> Any:
 
 # Read a user by id
 @router.get('/{id}', response_model=UserPublic)
-def read_user_by_uuid(db: SessionDep, id: UUID, current_user: CurrentUser) -> Any:
+def read_user_by_uuid(db: SessionDep, id: UuidDep, current_user: CurrentUser) -> Any:
     """
     Get user info with the user's uuid. \n
     Required token to get response. \n

@@ -14,7 +14,7 @@ from crud.favorite_stock import create_fav_stock, read_fav_stock, fetch_fav_stoc
 router = APIRouter(prefix='/stock', tags=['Stock'])
 
 
-@router.get('/{ticker}/short', response_model=StockResponse)
+@router.get("/{ticker}/short", response_model=StockResponse)
 def get_stock(db: SessionDep, ticker: str):
     # Check if the stock exist in DB
     stock = read_stock(db, ticker)
@@ -40,6 +40,8 @@ def get_stock_detailed(db: SessionDep, ticker: str, period: str, interval: str):
     
     result = read_detailed_stock_information(db, ticker, period, interval)
     return result
+
+
 
 @router.post("/{ticker}/favorite", response_model=StockResponse)
 def add_favorite_stock(db: SessionDep, ticker: str, current_user: CurrentUser):

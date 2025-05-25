@@ -11,7 +11,8 @@ def create_chat(db: Session, req: ChatCreate) -> Chat:
     new_chat = Chat(
         session_id=req.session_id,
         sender=req.sender,
-        content=req.content
+        content=req.content,
+        ticker=req.ticker or ""
     )
 
     db.add(new_chat)

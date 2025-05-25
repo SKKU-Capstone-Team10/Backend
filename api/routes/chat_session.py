@@ -4,7 +4,7 @@ from typing import Any
 from fastapi import APIRouter, HTTPException
 
 from core.auth import CurrentUser
-from core.db import SessionDep
+from core.db import SessionDep, UuidDep
 
 from models import (
     ChatSession
@@ -15,7 +15,7 @@ from schemas.chat_session import (
 )
 from schemas.message import Message
 from crud.chat_session import (
-    update_session_title,
+    patch_session_title,
     get_session_by_id,
     read_sessions,
     delete_session
@@ -47,13 +47,22 @@ def fetch_chat_sessions(db: SessionDep, user_id: UUID, current_user: CurrentUser
 def update_chat_session_title(db: SessionDep, req: ChatSessionUpdateTitle) -> Any:
     """
     Update the tile of chat session\n
-    **NOT Implemented yet**
+    - **id**: uuid of chat session to update the title \n
+    - **new_title**: new title to update \n
     """
-    return Message(message="Not implemented")
+    session = get_session_by_id(db, req.id)
+    if not session:
+        raise HTTPException(status_code=404, detail="Chat Session not found")
+
+    success = patch_session_title(db, session, req.new_title)
+    if not success: # Failed to write in DB
+        raise HTTPException(status_code=500, detail="Title update failed. Check server log.")
+    
+    return Message(message="Updated successfully.")
 
 # Delete a Chat Session
 @router.delete('/{id}', response_model=Message)
-def delete_chat_session(db: SessionDep, current_user: CurrentUser, id: UUID) -> Any:
+def delete_chat_session(db: SessionDep, current_user: CurrentUser, id: UuidDep) -> Any:
     """
     Delete a chat session. \n
     Token Required. \n
