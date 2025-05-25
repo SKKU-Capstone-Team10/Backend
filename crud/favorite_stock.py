@@ -2,8 +2,7 @@ from uuid import UUID, uuid4
 from typing import List
 
 from sqlmodel import Session, select
-
-from models import FavoriteStock
+from models import FavoriteStock, Stock
 from schemas.stock import *
 
 def create_fav_stock(db: Session, user_id: UUID, ticker: str) -> FavoriteStock:

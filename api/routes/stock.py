@@ -8,7 +8,7 @@ from core.auth import CurrentUser
 from models import Stock, FavoriteStock
 from schemas.stock import StockResponse
 
-from crud.stock import create_stock, read_stock, read_detailed_stock_information, update_stock_price
+from crud.stock import create_stock, read_stock, read_detailed_stock_information, update_stock_price, read_stock_minimal
 from crud.favorite_stock import create_fav_stock, read_fav_stock, fetch_fav_stocks, delete_fav_stock
 
 router = APIRouter(prefix='/stock', tags=['Stock'])
@@ -23,10 +23,18 @@ def get_stock(db: SessionDep, ticker: str):
     
     return stock
 
+@router.get('/{ticker}/minimal', response_model=StockResponse)
+def get_stock_minimal(ticker: str, db: SessionDep):
+    #기존 DB에 있는 주식 정보만 조회 , get_price() 호출 X
+    stock = read_stock_minimal(db, ticker)
+    if not stock:
+        raise HTTPException(status_code=404, detail="Stock not found")
+    return stock
+
 @router.get("/{ticker}/detailed", response_model=Dict[str, Any])
 def get_stock_detailed(db: SessionDep, ticker: str, period: str, interval: str):
     # Check if the stock exist in DB
-    stock = read_stock(db, ticker)
+    stock = read_stock_minimal(db, ticker)
     if not stock: # If not, insert into DB
         stock = create_stock(db, ticker)
     
@@ -36,7 +44,7 @@ def get_stock_detailed(db: SessionDep, ticker: str, period: str, interval: str):
 @router.post("/{ticker}/favorite", response_model=StockResponse)
 def add_favorite_stock(db: SessionDep, ticker: str, current_user: CurrentUser):
     # Check if the stock exist in DB
-    stock = read_stock(db, ticker)
+    stock = read_stock_minimal(db, ticker) # Fast check without real-time price update
     if not stock:
         stock = create_stock(db, ticker)
 
@@ -83,7 +91,7 @@ def fetch_favorite_stocks(db: SessionDep, current_user: CurrentUser):
     fav_stocks = []
 
     for ticker in fav_stock_tickers:
-        stock = read_stock(db, ticker)
+        stock = read_stock_minimal(db, ticker)
         fav_stocks.append(stock)
     
     return fav_stocks
