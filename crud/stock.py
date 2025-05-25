@@ -49,6 +49,16 @@ def read_stock(db: Session, ticker: str) -> Stock | None:
 
     return stock
 
+def read_stock_minimal(db: Session, ticker: str) -> Stock | None:
+    """
+    실시간 가격 업데이트 없이 DB에서만 주식 정보 조회
+    관심종목 목록, 간단한 표시용으로 사용
+    """
+    ticker = ticker.upper()
+    statement = select(Stock).where(Stock.ticker == ticker)
+    stock = db.exec(statement).first()
+    return stock
+
 def read_detailed_stock_information(db: Session, ticker: str, period: str='1mo', interval='1d') -> Dict:
     ticker = ticker.upper()
     try:
