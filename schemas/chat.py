@@ -17,7 +17,8 @@ class ChatResponse(BaseModel):
     sender: Literal["user", "host"]
     title: Optional[str]
     content: str
-    ticker: str
+    ticker: Optional[str] = None
+    refs: List[str]
     created_at: datetime
     class Config():
         from_attributes = True

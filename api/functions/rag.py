@@ -6,12 +6,14 @@ from core.config import settings
 
 # Pass the user query to RAG server
 # Get reply from the RAG server
-def get_ai_reply(content: str, is_first_chat: bool) -> str:
+def get_ai_reply(content: str, ticker: str, is_first_chat: bool) -> str:
+    ticker = ticker.upper() if ticker else None
     try:
         response = requests.post(
             f"{settings.RAG_HOST}{settings.RAG_ROUTE}",
             json={
                 "query": content,
+                "symbol": ticker,
                 "is_first_chat": is_first_chat
             },
             timeout=10
@@ -20,11 +22,11 @@ def get_ai_reply(content: str, is_first_chat: bool) -> str:
         result = response.json()
         title = result.get("title", None)
         reply = result.get("reply", "No reply from RAG server")
-        ticker = result.get("ticker", "No ticker parsed from RAG server")
+        refs = result.get("refs", "No refs parsed from RAG server")
         res = {
             "title": title,
             "content": reply,
-            "ticker": ticker
+            "refs": refs
         }
         return res
     

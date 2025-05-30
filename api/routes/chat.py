@@ -46,9 +46,9 @@ def post_chat(db: SessionDep, req: ChatCreate, current_user: CurrentUser) -> Any
     is_first_chat = 'session_id' not in req_data.keys()
 
     # Request a reply to ai server
-    res_rag = get_ai_reply(req_data['content'], is_first_chat)
+    res_rag = get_ai_reply(req_data['content'], req_data['ticker'], is_first_chat)
     res_content = res_rag['content']
-    res_ticker = res_rag['ticker']
+    res_refs = res_rag['refs']
 
     # If first chat, create a Chat Session
     if is_first_chat == True:
@@ -63,11 +63,12 @@ def post_chat(db: SessionDep, req: ChatCreate, current_user: CurrentUser) -> Any
         session_id=req_data['session_id'],
         sender="host",
         content=res_content,
-        ticker=res_ticker
+        ticker=req_data['ticker']
     )
     res = create_chat(db, ai_chat).model_dump()
     if is_first_chat == True:
         res['title'] = res_title
+    res['refs'] = res_refs
 
     return ChatResponse(**res)
 
