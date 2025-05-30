@@ -1,7 +1,9 @@
 from typing import List, Dict, Any
+import requests
 
 from fastapi import APIRouter, HTTPException
 
+from core.config import settings
 from core.db import SessionDep
 from core.auth import CurrentUser
 
@@ -41,6 +43,19 @@ def get_stock_detailed(db: SessionDep, ticker: str, period: str, interval: str):
     result = read_detailed_stock_information(db, ticker, period, interval)
     return result
 
+@router.get("/{ticker}/event")
+def get_stock_event(db: SessionDep, ticker: str):
+    ticker = ticker.upper()
+    try:
+        response = requests.get(
+            f"{settings.RAG_HOST}/api/rag/event/{ticker}",
+            timeout=30
+        )
+        response.raise_for_status()
+        return response.json()
+    
+    except requests.RequestException as e:
+        raise HTTPException(status_code=500, detail="Exception while requesting RAG server")
 
 
 @router.post("/{ticker}/favorite", response_model=StockResponse)
