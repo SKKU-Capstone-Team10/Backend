@@ -4,11 +4,13 @@ from fastapi import FastAPI
 
 from api.router import api_router
 
-
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    on_startup() # create local database
+    """
+    Create local database if not exist.
+    Insert stock and ETF records into the database.
+    """
+    on_startup()
     yield
     pass
 
@@ -17,7 +19,8 @@ app = FastAPI(lifespan=lifespan) # Call lifespan function
 # /docs : Swagger
 # /redoc : ReDoc
 
-@app.get('/') # Greeting Page
+# Greeting Page
+@app.get('/')
 def root():
     return {'message': "Capstone Team 10 Backend"}
 
@@ -28,8 +31,11 @@ app.include_router(api_router, prefix='/api')
 from sqlmodel import Session
 from core.db import create_db_and_tables, engine
 from core.setup import (
+    # Load Sotck and ETF from hard-coded small list
     setup_stock_records,
     setup_etf_records,
+    # Load Sotck and ETF from CSV
+    # Fetch information in parallel
     setup_stock_records_parallel,
     setup_etf_records_parallel
 )

@@ -1,7 +1,4 @@
-from typing import List, Dict, Union, Any
-from pandas import DataFrame
-import requests
-from bs4 import BeautifulSoup
+from typing import List, Dict, Any
 import yfinance as yf
 
 def get_price(ticker: str) -> float:

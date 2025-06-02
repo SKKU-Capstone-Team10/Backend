@@ -1,14 +1,12 @@
-from uuid import UUID, uuid4
-from typing import Dict, Any, List
+from typing import Dict
 
 from sqlmodel import Session, select
 from fastapi import HTTPException
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import ThreadPoolExecutor
 
-from models import Stock, FavoriteStock, ETFStockLink
+from models import Stock, ETFStockLink
 from schemas.stock import *
 
-from pandas import DataFrame
 from api.functions.yf_api import (
     get_price,
     get_name,

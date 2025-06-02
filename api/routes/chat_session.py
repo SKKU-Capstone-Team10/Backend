@@ -6,9 +6,6 @@ from fastapi import APIRouter, HTTPException
 from core.auth import CurrentUser
 from core.db import SessionDep, UuidDep
 
-from models import (
-    ChatSession
-)
 from schemas.chat_session import (
     ChatSessionList,
     ChatSessionUpdateTitle

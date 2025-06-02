@@ -7,7 +7,6 @@ from core.config import settings
 from core.db import SessionDep
 from core.auth import CurrentUser
 
-from models import Stock, FavoriteStock
 from schemas.stock import StockResponse
 
 from crud.stock import create_stock, read_stock, read_detailed_stock_information, update_stock_price, read_stock_minimal

@@ -1,4 +1,3 @@
-from uuid import UUID
 from typing import Any
 
 from fastapi import APIRouter, HTTPException

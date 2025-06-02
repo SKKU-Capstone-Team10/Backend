@@ -1,8 +1,7 @@
-from uuid import UUID
 from typing import Any
 from concurrent.futures import ThreadPoolExecutor
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
 
 from core.db import SessionDep, UuidDep
 from core.auth import CurrentUser

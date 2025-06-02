@@ -1,5 +1,4 @@
-from uuid import UUID, uuid4
-from typing import List
+from uuid import UUID
 
 from sqlmodel import Session, select
 from models import FavoriteStock, Stock

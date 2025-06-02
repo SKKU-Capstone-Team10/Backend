@@ -6,4 +6,4 @@ api_router.include_router(auth.router) # realted to token
 api_router.include_router(user.router) # user routes
 api_router.include_router(chat.router) # chat routes
 api_router.include_router(chat_session.router) # chat session routes
-api_router.include_router(stock.router)
+api_router.include_router(stock.router) # stock routes

@@ -10,6 +10,10 @@ from tqdm import tqdm
 import pandas as pd
 
 def setup_stock_records(db: SessionDep) -> None:
+    """
+    Check if the stock already exists in the database.
+    If not, fetch the stock data from yfinance and insert it into the database.
+    """
     tickers = [
         'MSFT', 'AAPL', 'NVDA', 'AMZN', 'GOOG', 'META', 'SOFI', 'AVGO', 'TSLA', 'WMT',
         'JPM', 'LLY', 'V', 'MA', 'NFLX', 'XOM', 'ORCL', 'COST', 'PG', 'HD',
@@ -30,6 +34,11 @@ def setup_stock_records(db: SessionDep) -> None:
     db.commit()
 
 def setup_etf_records(db: SessionDep) -> None:
+    """
+    Check if the ETF already exists in the database.
+    If not, fetch the ETF data from yfinance and insert it into the database.
+    Also, fetch the top holdings of the ETF and insert them into the ETFStockLink table.
+    """
     tickers = [
         'SOXL', 'SOXS', 'SPY', 'SPXS', 'HYG', 'XLF', 'FXI', 'EWZ', 'PSLV', 'BKLN',
         'GDX', 'IWM', 'LQD', 'EEM', 'XLV', 'TZA', 'EWJ', 'SCHD', 'KWEB', 'FAZ',
@@ -58,11 +67,8 @@ def setup_etf_records(db: SessionDep) -> None:
             pass
     db.commit()
 
-# ─────────────────────────────────────────────────────────
-# ① 원격 호출 (I/O) 부분만 함수화
-# ─────────────────────────────────────────────────────────
+# Parallelized version with US stock and ETF data list
 def _fetch_stock(ticker: str) -> Optional[Dict]:
-    """yfinance에서 주가·이름을 받아오고 실패 시 None 반환"""
     try:
         tkr = yf.Ticker(ticker)
         return {
@@ -75,10 +81,6 @@ def _fetch_stock(ticker: str) -> Optional[Dict]:
 
 
 def _fetch_etf(ticker: str) -> Optional[Tuple[Dict, List[str]]]:
-    """
-    ETF 가격·이름·보유종목을 병렬로 가져온다.
-    반환 값: (etf_info, holdings) / 실패 시 None
-    """
     try:
         etf = yf.Ticker(ticker)
         info = {
