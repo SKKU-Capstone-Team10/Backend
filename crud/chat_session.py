@@ -24,7 +24,7 @@ def get_session_by_id(db: Session, id: UUID) -> ChatSession:
 def read_sessions(db: Session, user_id: UUID) -> List[ChatSession]:
     statement = select(ChatSession).where(ChatSession.user_id == user_id)
     session_list = db.exec(statement)
-    return session_list
+    return list(session_list)
 
 def patch_session_title(db: Session, session: ChatSession, new_title: str) -> None:
     try:

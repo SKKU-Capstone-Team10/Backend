@@ -24,4 +24,4 @@ def create_chat(db: Session, req: ChatCreate) -> Chat:
 def read_chats(db: Session, session_id: UUID) -> List[Chat]:
     statement = select(Chat).where(Chat.session_id == session_id)
     chat_list = db.exec(statement)
-    return chat_list
+    return list(chat_list)

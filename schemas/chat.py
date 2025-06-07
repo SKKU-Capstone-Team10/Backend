@@ -9,16 +9,27 @@ class ChatCreate(BaseModel):
     sender: Literal["user", "host"]
     content: str
     ticker: Optional[str] = None
-
-# Response Field
+    
+# Response Field for individual chat (with refs for AI responses)
 class ChatResponse(BaseModel):
     id: UUID
     session_id: UUID
     sender: Literal["user", "host"]
-    title: Optional[str]
+    title: Optional[str] = None
     content: str
     ticker: Optional[str] = None
-    refs: List[str]
+    refs: Optional[List[str]] = None
+    created_at: datetime
+    class Config():
+        from_attributes = True
+
+# Response Field for chat history (without refs)
+class ChatHistoryItem(BaseModel):
+    id: UUID
+    session_id: UUID
+    sender: Literal["user", "host"]
+    content: str
+    ticker: Optional[str] = None
     created_at: datetime
     class Config():
         from_attributes = True
@@ -26,4 +37,4 @@ class ChatResponse(BaseModel):
 # Response Field for fetching a Chat Session History
 class ChatHistoryResponse(BaseModel):
     session_id: UUID
-    chats: List[ChatResponse]
+    chats: List[ChatHistoryItem]

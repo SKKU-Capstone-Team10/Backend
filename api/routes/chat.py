@@ -73,18 +73,18 @@ def post_chat(db: SessionDep, req: ChatCreate, current_user: CurrentUser) -> Any
     return ChatResponse(**res)
 
 # Fetch Chats belong to a Chat Session
-@router.get('/{session_id}', response_model=ChatHistoryResponse)
-def fetch_chats(db: SessionDep, session_id: UuidDep, current_user: CurrentUser) -> Any:
+@router.get('/{id}', response_model=ChatHistoryResponse)
+def fetch_chats(db: SessionDep, id: UuidDep, current_user: CurrentUser) -> Any:
     """
     Fetch chats of a session by uuid of the chat session. \n
     Token Required. \n
-    - **session_id**: uuid of the chat session \n
+    - **id**: uuid of the chat session \n
     403 Error - Invalid token. \n
     404 Error - User with the token not found.
     """
-    chat_list = read_chats(db, session_id)
+    chat_list = read_chats(db, id)
     res_data = ChatHistoryResponse(
-        session_id=session_id,
+        session_id=id,
         chats=chat_list
     )
     return res_data
