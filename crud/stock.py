@@ -93,7 +93,7 @@ def read_detailed_stock_information(db: Session, ticker: str, period: str='1mo',
         'history': history,
         'dividends': dividends,
         'splits': splits,
-        'earning_calendar': earning_calendar,
+        'earnings_calendar': earning_calendar,
         'related_etfs': related_etfs_info,
         'news': news
     }
